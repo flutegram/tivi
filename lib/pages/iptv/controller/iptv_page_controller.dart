@@ -94,7 +94,7 @@ class IptvPageController extends GetxController{
   }
 
   EpgCallBack getEpgCallBack() {
-    EpgCallBack callBack = EpgCallBack(retryEpg,"直播源");
+    EpgCallBack callBack = EpgCallBack(retryEpg,"Live Source");
     return callBack;
   }
 
@@ -103,7 +103,7 @@ class IptvPageController extends GetxController{
   }
 
   IPTVCallBack getIPTVCallBack() {
-    IPTVCallBack callBack = IPTVCallBack(retryIPTV,"频道源");
+    IPTVCallBack callBack = IPTVCallBack(retryIPTV,"Channel Source");
     return callBack;
   }
 
@@ -113,13 +113,13 @@ class IptvPageController extends GetxController{
 
 
   Future<void> _initData() async {
-    _logger.debug("节目单正在解析");
+    _logger.debug("The program list is being parsed");
 
     try{
       await iptvController.refreshIptvList(callBack: getIPTVCallBack());
     }catch(e){
       loadingState.value = LoadingState.failed;
-      loadingMsg.value = "${e.toString()} 获取直播源失败,请检查网络连接";
+      loadingMsg.value = "${e.toString()} Failed to obtain live source, please check the network connection";
       return;
     }
 
@@ -127,7 +127,7 @@ class IptvPageController extends GetxController{
       // await iptvController.refreshEpgList(callBack: getEpgCallBack());
     }catch(e){
       loadingState.value = LoadingState.failed;
-      loadingMsg.value = "${e.toString()} 获取频道失败,请检查网络连接";
+      loadingMsg.value = "${e.toString()} Failed to obtain channel, please check the network connection";
       return;
     }
     iptvController.currentIptv.value = iptvController.iptvList.elementAtOrNull(IptvSettings.initialIptvIdx) ?? iptvController.iptvList.first;

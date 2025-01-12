@@ -1,3 +1,7 @@
+// Copyright 2024. Please see the AUTHORS file for details.
+// All rights reserved. Use of this source code is governed
+// by a BSD-style license that can be found in the LICENSE file.
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -5,47 +9,39 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:tivi/pages/iptv/page/iptv_view.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-import 'package:tivi/common/index.dart';
+
+import 'common/index.dart';
+import 'pages/iptv/page/iptv_view.dart';
 
 
 void main() async {
-  print(await getApplicationSupportDirectory());
-
-
   MediaKit.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
 
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
 
-
-  // 强制横屏
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-  // 小白条、导航栏沉浸
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     systemNavigationBarColor: Colors.transparent,
     systemNavigationBarDividerColor: Colors.transparent,
     statusBarColor: Colors.transparent,
   ));
-  // 保持屏幕常亮
-  WakelockPlus.enable();
-  // 初始化
+  await WakelockPlus.enable();
   await PrefsUtil.init();
   LoggerUtil.init();
   RequestUtil.init();
 
-  // 注册全局Controller
   Get.put(PlayController());
   Get.put(IptvController());
   Get.put(UpdateController());
 
   runApp(const MyApp());
-
-
 }
 
 class NoThumbScrollBehavior extends ScrollBehavior {
@@ -71,26 +67,24 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       child: RestartWidget(
         child: GetMaterialApp(
-          title: '我的电视',
+          title: 'JowoTV',
           theme: ThemeData(
             colorScheme: colorScheme,
           ),
           scrollBehavior: NoThumbScrollBehavior().copyWith(scrollbars: false),
           localizationsDelegates: const [...GlobalMaterialLocalizations.delegates, GlobalWidgetsLocalizations.delegate],
-          supportedLocales: const [Locale("zh", "CH"), Locale("en", "US")],
+          supportedLocales: const [Locale('id', 'ID'), Locale('en', 'US')],
           home: const DelayRenderer(
             child: DoubleBackExit(
               child: IptvPage(),
             ),
           ),
-          builder: (BuildContext context, Widget? widget) {
-            return OKToast(
-              position: const ToastPosition(align: Alignment.topCenter, offset: 0),
-              textPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              dismissOtherOnShow: true,
-              child: widget!,
-            );
-          },
+          builder: (context, widget) => OKToast(
+            position: const ToastPosition(align: Alignment.topCenter, offset: 0),
+            textPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            dismissOtherOnShow: true,
+            child: widget!,
+          ),
         ),
       ),
     );

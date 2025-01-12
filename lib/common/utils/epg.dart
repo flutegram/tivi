@@ -17,12 +17,12 @@ class EpgUtil {
   static Future<String> _fetchXml({EpgCallBack? callBack}) async {
     try {
       final url = IptvSettings.customEpgXml.isNotEmpty ? IptvSettings.customEpgXml : Constants.iptvEpgXml;
-      _logger.debug('获取远程xml: $url');
+      _logger.debug('Get remote xml: $url');
       final result = await RequestUtil.get(url,callBack: callBack);
       return result;
     } catch (e, st) {
       _logger.handle(e, st);
-      showToast('获取epg失败，请检查网络连接');
+      showToast('Failed to obtain epg, please check the network connection');
       rethrow;
     }
   }
@@ -56,13 +56,13 @@ class EpgUtil {
       final cache = await _getCacheXml();
 
       if (cache != null) {
-        _logger.debug('使用缓存xml');
+        _logger.debug('Using cache xml');
         return cache;
       }
     } else {
       // 1点前，远程epg可能未更新
       if (now.hour < IptvSettings.epgRefreshTimeThreshold) {
-        _logger.debug('未到时间点，不刷新epg');
+        _logger.debug('If the time point has not arrived, epg will not be refreshed');
         return XmlBuilder().buildDocument().toXmlString();
       }
     }
@@ -79,7 +79,7 @@ class EpgUtil {
 
   /// 解析epg
   static Future<List<Epg>> _parseFromXml(String xml, List<String> filteredChannels) async {
-    _logger.debug('开始解析epg');
+    _logger.debug('Start parsing epg');
     final startAt = DateTime.now().millisecondsSinceEpoch;
 
     try {
@@ -129,11 +129,11 @@ class EpgUtil {
         return epgMap.values.toList();
       }, [xml, filteredChannels]);
 
-      _logger.debug('解析epg完成，共${epgList.length}个频道，耗时：${DateTime.now().millisecondsSinceEpoch - startAt}ms');
+      _logger.debug('Parsing epg completed, total${epgList.length}channels, time consuming：${DateTime.now().millisecondsSinceEpoch - startAt}ms');
       return epgList;
     } catch (e, st) {
       _logger.handle(e, st);
-      showToast('解析epg失败');
+      showToast('Failed to parse epg');
       rethrow;
     }
   }
@@ -172,7 +172,7 @@ class EpgUtil {
       final cache = await _getCache();
 
       if (cache != null) {
-        _logger.debug('使用缓存epg');
+        _logger.debug('Use cache epg');
         return cache;
       }
     }

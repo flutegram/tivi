@@ -43,7 +43,7 @@ class Epg{
     return Epg(
       channel: channel.epgName,
       programmeList: EpgProgrammeList(
-        value:[EpgProgramme(title: "暂无节目")],
+        value:[EpgProgramme(title: "No show yet")],
       )
     );
   }

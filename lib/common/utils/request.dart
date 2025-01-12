@@ -15,7 +15,7 @@ class RequestUtil {
 
   static void init() {
     HttpOverridesUtil.init();
-    _logger = LoggerUtil.create(['网络请求']);
+    _logger = LoggerUtil.create(['Network Request']);
   }
 
   static RetryClient _client(CallBack? callBack) {
@@ -26,8 +26,8 @@ class RequestUtil {
       when: (resp) => resp.statusCode != 200,
       whenError: (_, __) => true,
       onRetry: (req, resp, retryCount) {
-        callBack?.retry("获取远程${callBack.name}(${retryCount + 1}/${Constants.httpRetryCount})...");
-        _logger.warning('${req.url} 请求失败，正在重试: $retryCount');
+        callBack?.retry("Get Remote${callBack.name}(${retryCount + 1}/${Constants.httpRetryCount})...");
+        _logger.warning('${req.url} Request failed, retrying: $retryCount');
       },
     );
   }
@@ -67,7 +67,7 @@ class RequestUtil {
         final response = await client.send(http.Request('GET', Uri.parse(url)));
 
         if (response.statusCode != 200) {
-          resultPort.send(['error', '请求失败: ${response.statusCode}: ${response.reasonPhrase}']);
+          resultPort.send(['error', 'Request failed: ${response.statusCode}: ${response.reasonPhrase}']);
           return;
         }
 

@@ -22,7 +22,7 @@ class MultiChannelListView extends GetView{
     return ListView.builder(
         itemCount: multiLineList.length,
         itemBuilder: (context,index){
-          return LineView("线路1", "回放", multiLineList[index]);
+          return LineView("Line 1", "Playback", multiLineList[index]);
         });
   }
 

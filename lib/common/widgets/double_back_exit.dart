@@ -24,7 +24,7 @@ class _DoubleBackExitState extends State<DoubleBackExit> {
         } else {
           if (_lastPressedAt == null || DateTime.now().difference(_lastPressedAt!) > const Duration(seconds: 2)) {
             _lastPressedAt = DateTime.now();
-            showToast('再按一次退出', duration: const Duration(seconds: 2));
+            showToast('Press again to exit', duration: const Duration(seconds: 2));
             return;
           }
           SystemNavigator.pop();

@@ -305,16 +305,16 @@ class _SettingsMainState extends State<SettingsMain> {
             if (LoggerUtil.history.isNotEmpty) {
               NavigatorUtil.push(context, SettingsLogger());
             } else {
-              showToast('无日志记录');
+              showToast('No logging');
             }
           },
         ),
       ]),
-      SettingGroup(name: '更多', items: [
+      SettingGroup(name: 'More', items: [
         SettingItem(
-          title: '更多设置',
+          title: 'More settings',
           value: () => '',
-          description: () => '访问以下网址进行配置：${HttpServerUtil.serverUrl}',
+          description: () => 'Visit the following URL for configuration：${HttpServerUtil.serverUrl}',
           onTap: () => _showServerQrcode(),
         ),
       ]),

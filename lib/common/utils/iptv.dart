@@ -13,12 +13,12 @@ class IptvUtil {
   static Future<String> _fetchSource(IPTVCallBack? callBack) async {
     try {
       final iptvSource =IptvSettings.customIptvSource.isNotEmpty ? IptvSettings.customIptvSource : Constants.iptvSource;
-      _logger.debug('获取远程直播源: $iptvSource');
+      _logger.debug('Get remote live source: $iptvSource');
       final result = await RequestUtil.get(iptvSource,callBack: callBack);
       return result;
     } catch (e, st) {
       _logger.handle(e, st);
-      showToast('获取直播源失败，请检查网络连接');
+      showToast('Failed to obtain live source, please check the network connection');
       rethrow;
     }
   }
@@ -97,7 +97,7 @@ class IptvUtil {
     if(IptvSettings.iptvChannelList.length != channel){
       IptvSettings.iptvChannelList = List<String>.filled(channel, "");
     }
-    _logger.debug('解析m3u完成: ${groupList.length}个分组, $channel个频道');
+    _logger.debug('Parsing m3u completed: ${groupList.length}Groups, ${channel}Channels');
     return groupList;
   }
 
@@ -144,7 +144,7 @@ class IptvUtil {
       }
     }
 
-    _logger.debug('解析tvbox完成: ${groupList.length}个分组, $channel个频道');
+    _logger.debug('Parsing tvbox completed: ${groupList.length}Groups, ${channel}Channels');
 
     return groupList;
   }
@@ -159,7 +159,7 @@ class IptvUtil {
       }
     } catch (e, st) {
       _logger.handle(e, st);
-      showToast('解析直播源失败，请检查直播源格式');
+      showToast('Failed to parse the live source, please check the live source format');
       rethrow;
     }
   }
@@ -171,7 +171,7 @@ class IptvUtil {
     if (now - IptvSettings.iptvSourceCacheTime < IptvSettings.iptvSourceCacheKeepTime) {
       final cache = await _getCache();
       if (cache.isNotEmpty) {
-        _logger.debug('使用缓存直播源');
+        _logger.debug('Using cached live source');
         return _parseSource(cache);
       }
     }

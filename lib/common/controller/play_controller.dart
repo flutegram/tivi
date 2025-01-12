@@ -1,107 +1,73 @@
-/*
- * @File     : play_view.dart
- * @Author   : jade
- * @Date     : 2024/10/10 14:05
- * @Email    : jadehh@1ive.com
- * @Software : Samples
- * @Desc     :
- */
+// Copyright 2024. Please see the AUTHORS file for details.
+// All rights reserved. Use of this source code is governed
+// by a BSD-style license that can be found in the LICENSE file.
+
+import 'dart:async';
 
 import 'package:get/get.dart';
-import 'package:tivi/common/index.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import '../index.dart';
 
-/// 播放状态
 enum PlayerState {
-  /// 等待播放
   waiting,
-  /// 播放中
   playing,
-  /// 播放失败
   failed,
 }
 
-final _logger = LoggerUtil.create(['播放器']);
-
+final _logger = LoggerUtil.create(['Player']);
 
 class PlayController extends GetxController {
   static IptvController get iptvController => Get.find<IptvController>();
 
-  // 视频播放控制器
-  final Player player = Player(configuration: const PlayerConfiguration(logLevel: MPVLogLevel.error));
+  final Player player = Player();
 
-  //视频控制器
   late final VideoController controller = VideoController(player);
 
-  // 视频宽度
   RxInt width = 0.obs;
 
-  // 视频高度
   RxInt height = 0.obs;
 
-  /// 播放状态
   Rx<PlayerState> state = PlayerState.waiting.obs;
 
+  RxString msg = ''.obs;
 
-  // 播放信息
-
-  RxString msg = "".obs;
-
-
-  // 初始化
   @override
-  void onInit() async {
+  Future<void> onInit() async {
     super.onInit();
 
     player.stream.buffering.listen((event){
       if(event && state.value == PlayerState.waiting){
         state.value = PlayerState.playing;
-        _logger.debug("正在解析播放连接中");
+        _logger.debug('Parsing playback connection');
       }
       if(event == false && state.value != PlayerState.waiting){
         if(state.value != PlayerState.failed){
           RefreshEvent.hiddenDelayIptv();
-          _logger.debug("播放成功");
+          _logger.debug('Playback successful');
         }else{
           RefreshEvent.showIptv();
-          if(iptvController.currentChannel.value + 1 < iptvController.currentIptv.value.urlList.length){
+          final (channel, ipTv) = (
+            iptvController.currentChannel,
+            iptvController.currentIptv,
+          );
+          if(channel.value + 1 < ipTv.value.urlList.length){
             RefreshEvent.changeIptv();
           }
-          // 自动切换下一个源
-          _logger.debug("播放失败");
+          _logger.debug('Playback failed');
         }
       }
     });
 
-
-    // player.stream.playing.listen((event) {
-    //   _logger.debug("Playing:$event");
-    //   // if (event && state.value == PlayerState.loading){
-    //   //   _logger.debug("正在打开播放连接");
-    //   //   state.value = PlayerState.waiting;
-    //   // }
-    //   // if (state.value != PlayerState.loading ){
-    //   //   if(event){
-    //   //     _logger.debug("播放连接打开成功");
-    //   //     state.value = PlayerState.playing;
-    //   //   }else{
-    //   //     _logger.debug("播放连接打开失败");
-    //   //     state.value = PlayerState.failed;
-    //   //   }
-    //   // }
-    // });
-
     player.stream.error.listen((event) {
-      _logger.debug("Error:$event");
-      // 显示失败原因
+      _logger.debug('Error:$event');
       msg.value  = event;
       state.value = PlayerState.failed;
       player.stop();
     });
 
     player.stream.log.listen((log) {
-      _logger.debug("Log:$log");
+      _logger.debug('Log:$log');
     });
 
 
@@ -122,21 +88,18 @@ class PlayController extends GetxController {
     });
   }
 
-
-  // 播放直播源
   Future<void> playIptv(Iptv iptv) async {
     try {
-      //如果是多源,优先获取上次的线路
-      var channelList = IptvSettings.iptvChannelList;
-      var initialChannelIdx = channelList[iptv.idx].isEmpty ? 0 : int.parse(IptvSettings.iptvChannelList[iptv.idx]);
+      final channelList = IptvSettings.iptvChannelList;
+      final initialChannelIdx = channelList[iptv.idx].isEmpty
+        ? 0
+        : int.parse(IptvSettings.iptvChannelList[iptv.idx]);
       iptvController.currentChannel.value = initialChannelIdx;
       channelList[iptv.idx] = initialChannelIdx.toString();
       IptvSettings.iptvChannelList = channelList;
       state.value = PlayerState.waiting;
-      _logger.debug('播放直播源: ${iptv.urlList.elementAt(initialChannelIdx)},源idx:$initialChannelIdx');
-      print("ABAL: url: ${iptv.urlList.elementAt(initialChannelIdx)}");
-      player.open(Media(iptv.urlList.elementAt(initialChannelIdx)));
-      // await player.open(Media(iptv.url));
+      _logger.debug('Play live source: ${iptv.urlList.elementAt(initialChannelIdx)},Source idx:$initialChannelIdx');
+      unawaited(player.open(Media(iptv.urlList.elementAt(initialChannelIdx))));
     } catch (e, st) {
       _logger.handle(e, st);
       state.value = PlayerState.failed;

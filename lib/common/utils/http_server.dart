@@ -75,7 +75,7 @@ class HttpServerUtil {
     _isInitialized = true;
     serverUrl = 'http://${await _getLocalIPV4()}:${server.port}';
 
-    _logger.debug('启动 $serverUrl');
+    _logger.debug('start up $serverUrl');
   }
 
   static Future<String> _getLocalIPV4() async {

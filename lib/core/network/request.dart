@@ -26,8 +26,8 @@ class RequestUtil {
       when: (resp) => resp.statusCode != 200,
       whenError: (_, __) => true,
       onRetry: (req, resp, retryCount) {
-        callBack?.retry("获取远程${callBack.name}(${retryCount + 1}/${Constants.httpRetryCount})...");
-        _logger.warning('${req.url} 请求失败，正在重试: $retryCount');
+        callBack?.retry('Get Remote${callBack.name}(${retryCount + 1}/${Constants.httpRetryCount})...');
+        _logger.warning('${req.url} Request failed, retrying: $retryCount');
       },
     );
   }
@@ -36,7 +36,7 @@ class RequestUtil {
     final client = _client(callBack);
     try {
       final resp = await client.get(Uri.parse(url));
-      if (url.endsWith(".gz")){
+      if (url.endsWith('.gz')){
         List<int> gzipBytes =  GZipDecoder().decodeBytes(resp.bodyBytes);
         return utf8.decode(gzipBytes);
       }
